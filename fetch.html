@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Display Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card img { max-width: 100%; height: auto; border-radius: 5px; margin-top: 10px; display: block; }
+        .card h2 { margin-top: 0; color: #333; }
+        .card p { color: #666; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Saare Posts</h1>
+    <div id="posts-container">Loading posts...</div>
+</div>
+
+<script>
+    // Kyunki dono file ek hi jagah hain, isliye direct file ka naam call karenge
+    fetch('https://trimeroustechnology.hstn.me/get-post.php')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = ''; 
+
+            if (data.error) {
+                container.innerHTML = `<p style="color:red;">Error: ${data.error}</p>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                container.innerHTML = '<p>Koi data nahi mila database me.</p>';
+                return;
+            }
+
+            data.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                let imgHtml = '';
+                if (post.image) {
+                    imgHtml = `<img src="${post.image}" alt="${post.title}">`;
+                }
+
+                card.innerHTML = `
+                    <h2>${post.title}</h2>
+                    <p>${post.description}</p>
+                    ${imgHtml}
+                `;
+                container.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error tracking:', error);
+            document.getElementById('posts-container').innerHTML = '<p>Data load karne me dikkat aayi.</p>';
+        });
+</script>
+
+</body>
+</html>
